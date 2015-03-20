@@ -27,10 +27,13 @@
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="txtTemp" FontSize="140" HorizontalAlignment="Center" >Wait</TextBlock>
-        <TextBlock x:Name="txtHum" FontSize="100" HorizontalAlignment="Center" Grid.Row="1" ></TextBlock>
+        <TextBlock x:Name="txtTemp" Margin="0,18,0,0" Grid.Row="0" FontSize="110" HorizontalAlignment="Center" >Wait</TextBlock>
+        <TextBlock x:Name="txtHum" FontSize="90" HorizontalAlignment="Center" Grid.Row="1" ></TextBlock>
+        <TextBlock x:Name="txtMessage" TextWrapping="Wrap" FontSize="40" HorizontalAlignment="Center" Grid.Row="2" ></TextBlock>
     </Grid>
     <Page.BottomAppBar>
         <CommandBar>

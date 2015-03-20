@@ -97,6 +97,7 @@
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Common\RelayCommand.cs" />
+    <Compile Include="Common\Rootobject.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="NodeList.xaml.cs">
       <DependentUpon>NodeList.xaml</DependentUpon>

@@ -1,30 +1,15 @@
-﻿using WPTermoClient.Common;
-using WPTermoClient.Data;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
-using Windows.Media.Devices;
+using Windows.Storage;
 using Windows.UI;
-using Windows.UI.Text;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using Newtonsoft.Json;
+using WPTermoClient.Common;
 
 // The Pivot Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
@@ -49,7 +34,7 @@ namespace WPTermoClient
 
             statusBar.ProgressIndicator.ShowAsync();
             HttpWebRequest request =
-                (HttpWebRequest)HttpWebRequest.Create(new Uri(Windows.Storage.ApplicationData.Current.LocalSettings.Values["weatherstation"].ToString()));
+                (HttpWebRequest)HttpWebRequest.Create(new Uri(ApplicationData.Current.LocalSettings.Values["weatherstation"].ToString()));
 
             request.BeginGetResponse(GetWeatherDataCallback, request);
 
@@ -67,35 +52,50 @@ namespace WPTermoClient
 
                     using (StreamReader sr = new StreamReader(r))
                     {
-                        var content = sr.ReadToEnd();
+                        var content = sr.ReadToEnd(); // Read the stream till the end as string
 
-                        var tempData = JsonConvert.DeserializeObject<Rootobject>(content);
+                        var tempData = new TempData();
+                        tempData.TempDataAdapter(JsonConvert.DeserializeObject<Rootobject>(content));
 
-                        double tem = tempData.main.temp - 273.15;
-                        Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => txtTemp.Text = (tem).ToString("F2") + "C");
-                        Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => txtHum.Text = (tempData.main.humidity).ToString("F1") + "%");
+                        double tem = tempData.Temperature; // To celsium tempData.c;
+                        double h = tempData.Humidity;
+
+                        Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => txtTemp.Text = (tem).ToString("F2") + "C");
+                        Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => txtHum.Text = (h).ToString("F1") + "%");
                     
                         Color c = Colors.White;
-
+                        // Change the color based on "comfort"
+                        string message = string.Empty;
+                        
                         if (tem < 5)
                         {
                             c = Colors.DodgerBlue;
+                            message = "Brrr... Its cold!";
                         }
                         else if (tem < 20)
                         {
                             c = Colors.Orange;
-
+                            message = "You can wear the spring things!";
                         }
                         else if (tem < 35)
                         {
                             c = Colors.OrangeRed;
+                            message = "Weather is comfy!";
                         }
                         else
                         {
                             c = Colors.Red;
+                            message = "You will DIE. The sun is angry!";
                         }
-                        Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => txtTemp.Foreground = new SolidColorBrush(c));
-                        Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => statusBar.HideAsync());
+                        if (h > 95)
+                            message += " Hope you know how to swim!";
+                        if (h > 80)
+                            message += " You probably need an umbrella!";
+
+                            Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => txtMessage.Text += message);
+
+                        Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => txtTemp.Foreground = new SolidColorBrush(c));
+                        Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => statusBar.HideAsync());
 
                     }
                 }
@@ -109,6 +109,28 @@ namespace WPTermoClient
         private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
         {
             GetCurrentMeasurement();
+        }
+    }
+
+    public class TempData
+    {
+        public double Temperature { get; set; }
+        public double Humidity { get; set; }
+
+        public void TempDataAdapter(object ob)
+        {
+            if (ob.GetType() == typeof (Rootobject))
+            {
+                var a = (Rootobject) ob;
+                Temperature = a.main.temp - 273.15;
+                Humidity = a.main.humidity;
+            }
+            else if (ob.GetType() == typeof (RootobjectLocal))
+            {
+                var a = (RootobjectLocal)ob;
+                Temperature = a.c;
+                Humidity = a.h;
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ namespace WPTermoClient
             this.NavigationCacheMode = NavigationCacheMode.Required;
             this.Loaded += (sender, args) =>
             {
-                txtWeatherStationName.Text = "http://api.openweathermap.org/data/2.5/weather?id=611717";
+                txtWeatherStationName.Text = "http://api.openweathermap.org/data/2.5/weather?id=611717"; // "http://nodepingx.azurewebsites.net/?get=ping"; 
 
             };
 
