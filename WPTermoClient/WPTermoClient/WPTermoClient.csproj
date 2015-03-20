@@ -93,12 +93,18 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\Class1.cs" />
+    <Compile Include="Common\Weather.cs" />
+    <Compile Include="Common\Clouds.cs" />
+    <Compile Include="Common\Coord.cs" />
+    <Compile Include="Common\Main.cs" />
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\Rootobject.cs" />
+    <Compile Include="Common\RootobjectLocal.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="Common\Sys.cs" />
+    <Compile Include="Common\Wind.cs" />
     <Compile Include="NodeList.xaml.cs">
       <DependentUpon>NodeList.xaml</DependentUpon>
     </Compile>

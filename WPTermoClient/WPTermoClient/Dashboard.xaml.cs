@@ -55,18 +55,18 @@ namespace WPTermoClient
                         var content = sr.ReadToEnd(); // Read the stream till the end as string
 
                         var tempData = new TempData();
-                        tempData.TempDataAdapter(JsonConvert.DeserializeObject<Rootobject>(content));
+                        tempData.TempDataAdapter(content);
 
                         double tem = tempData.Temperature; // To celsium tempData.c;
                         double h = tempData.Humidity;
 
                         Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => txtTemp.Text = (tem).ToString("F2") + "C");
                         Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => txtHum.Text = (h).ToString("F1") + "%");
-                    
+
                         Color c = Colors.White;
                         // Change the color based on "comfort"
                         string message = string.Empty;
-                        
+
                         if (tem < 5)
                         {
                             c = Colors.DodgerBlue;
@@ -92,7 +92,7 @@ namespace WPTermoClient
                         if (h > 80)
                             message += " You probably need an umbrella!";
 
-                            Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => txtMessage.Text += message);
+                        Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => txtMessage.Text += message);
 
                         Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => txtTemp.Foreground = new SolidColorBrush(c));
                         Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => statusBar.HideAsync());
@@ -117,17 +117,21 @@ namespace WPTermoClient
         public double Temperature { get; set; }
         public double Humidity { get; set; }
 
-        public void TempDataAdapter(object ob)
+        public void TempDataAdapter(string content)
         {
-            if (ob.GetType() == typeof (Rootobject))
+            // Deserialize, based on input URL
+            string url = ApplicationData.Current.LocalSettings.Values["weatherstation"].ToString();
+
+
+            if (url.Contains("api.openweathermap.org"))
             {
-                var a = (Rootobject) ob;
+                var a = JsonConvert.DeserializeObject<Rootobject>(content);
                 Temperature = a.main.temp - 273.15;
                 Humidity = a.main.humidity;
             }
-            else if (ob.GetType() == typeof (RootobjectLocal))
+            else if (url.Contains("nodepingx.azurewebsites.net"))
             {
-                var a = (RootobjectLocal)ob;
+                var a = JsonConvert.DeserializeObject<RootobjectLocal>(content);
                 Temperature = a.c;
                 Humidity = a.h;
             }
